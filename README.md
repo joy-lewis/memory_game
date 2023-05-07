@@ -1,3 +1,3 @@
 # memory_game
 
-This is a tic tac toe like game in R.
+This is a memory game in R.
