@@ -22,7 +22,7 @@ print_board <- function(board, n_row, n_col, free) {
             }
             # print a card that is already won by a player
             if (board[i, j, 4] > 0) {
-                text(i, j, board[i, j, 5])
+                text(i, j, board[i, j, 4])
             }
         }
     }
@@ -33,7 +33,7 @@ get_free_cards <- function(board, n_row, n_col){
 
     for (i in 1:n_row) {
         for (j in 1:n_col) {
-            if (board[i, j, 5] == 0) { # check if card was already won by a player
+            if (board[i, j, 4] == 0) { # check if card was already won by a player
                 free <- c(free, list(c(i, j)))  # add the pair to the list
             }
         }
@@ -163,15 +163,11 @@ print_leaderboard <- function(leaderboard, player) {
 
 equal_cards <- function(board, card1, card2, player){
     # 1) set 4th value of 3rd dimension for both cards to 1,
-    # since they are not available anymore
-    # 2) set 5th value of 3rd dimension for both cards to the player value
-    # since the current player won tboth cards
-    # 3) the player stays the same
+    # since the current player won both cards
+    # 2) the player stays the same
 
-    board[card1[1], card1[2], 4] <- 1
-    board[card2[1], card2[2], 4] <- 1
-    board[card1[1], card1[2], 5] <- player
-    board[card2[1], card2[2], 5] <- player
+    board[card1[1], card1[2], 4] <- player
+    board[card2[1], card2[2], 4] <- player
     return(board)
 }
 
@@ -192,7 +188,7 @@ check_game_ended <- function(board, n_row, n_col) {
     # -> if number == 1 than print board with remainign card face up, winner/s, leaderboard & return True
 
     # -> if number == 0 than print board as it is, winner/s, leaderboard & return True
-    
+
     # -> else Return False
 }
 
