@@ -1,6 +1,6 @@
 # main game class
 
-print_board <- function(board, n_row, n_col) {
+print_board_OLD <- function(board, n_row, n_col) {
     # board entrys follow this pattern:
     #     pch, symbols from 1 to 13
     #     col, colors from 1 to 8
@@ -23,6 +23,46 @@ print_board <- function(board, n_row, n_col) {
             # print a card that is already won by a player
             if (board[i, j, 4] > 0) {
                 text(i, j, board[i, j, 4])
+            }
+        }
+    }
+}
+
+print_board <- function(board, n_row, n_col) {
+    # board entrys follow this pattern:
+    #     pch, symbols from 1 to 13
+    #     col, colors from 1 to 8
+
+    ### Plot an empty grid with n_row rows and n_col columns
+    plot(1:n_col, 1:n_row, type = "n", xlab = "", ylab = "", axes = FALSE, bty = "o")
+    title("Memory")
+
+    # add x-axis with column numbers
+    axis(side = 1, at = 1:n_col, labels = FALSE, tick = FALSE, line = -0.5)
+    # add y-axis with row numbers
+    axis(side = 2, at = 1:n_row, labels = FALSE, tick = FALSE, line = -0.5)
+
+    # add column labels to top margin of plot
+    mtext(1:n_col, side = 3, at = 1:n_col, line = 0.5, cex = 1.5)
+    # add row labels to left margin of plot
+    mtext(rev(1:n_row), side = 2, at = 1:n_row, line = 0.5, cex = 1.5)
+
+    # draw a box around the plot
+    box()
+
+    ### Fill plot with symbols and numbers
+    for(i in 1:n_row) {
+        for(j in 1:n_col) {
+            # only print symbol if card is face UP and available
+            if ((board[i, j, 3] == 1) & (board[i, j, 4] == 0)) {
+                pch_val <- board[i, j, 1]
+                col_val <- board[i, j, 2]
+                ### TODO
+
+            }
+            # print a card that is already won by a player
+            if (board[i, j, 4] > 0) {
+                text(j, i, board[i, j, 4], pos = 4, cex = 1.2)
             }
         }
     }
@@ -159,8 +199,6 @@ init_board <- function(n, n_row, n_col) {
 }
 
 init_player <- function(n_real, n_computer){
-    set.seed(0) # JUST FOR TESTING !!!!!!
-
     all_players <- seq(from = 1, to = n_real + n_computer)
     player <- sample(all_players, 1)
     cat("Player", player, "starts!\n")
@@ -252,6 +290,8 @@ check_game_ended <- function(board, n_row, n_col, leaderboard, player) {
 }
 
 memory <- function(n_row = 4, n_col = 4, n_real = 2, n_computer = 0) {
+    # set.seed(0) # JUST FOR TESTING !!!!!!
+
     n <- n_row * n_col # total number of cards
     leaderboard <- rep(0, n_real + n_computer) # leaderboard for all players
 
