@@ -1,41 +1,12 @@
 # main game class
-
-print_board_OLD <- function(board, n_row, n_col) {
-    # board entrys follow this pattern:
-    #     pch, symbols from 1 to 13
-    #     col, colors from 1 to 8
-    plot(0, 0, main = "", xlab = "", ylab = "",
-        xlim = c(1, n_col), ylim = c(n_row, 1), xaxt = "n", axes = FALSE)
-    title(main = "Memory", font.main = 2, line = 3)
-    # remove the tick marks on y-axis and x-axis
-    axis(2, at = n_row:1, lwd.ticks = 0, cex.axis = 1.5)
-    axis(3, at = 1:n_col, lwd.ticks = 0, cex.axis = 1.5)
-    box()
-    # extract values for symbol and color from current board
-    for (i in 1:n_row){
-        for (j in 1:n_col){
-            # only print symbol if card is face UP and available
-            if ((board[i, j, 3] == 1) & (board[i, j, 4] == 0)) {
-                pch_val <- board[i, j, 1]
-                col_val <- board[i, j, 2]
-                points(i, j, pch = pch_val, col = col_val)
-            }
-            # print a card that is already won by a player
-            if (board[i, j, 4] > 0) {
-                text(i, j, board[i, j, 4])
-            }
-        }
-    }
-}
-
 print_board <- function(board, n_row, n_col) {
     # board entrys follow this pattern:
     #     pch, symbols from 1 to 13
     #     col, colors from 1 to 8
 
     ### Plot an empty grid with n_row rows and n_col columns
-    plot(1:n_col, 1:n_row, type = "n", xlab = "", ylab = "", axes = FALSE, bty = "o")
-    title("Memory")
+    plot(0, 0, type = "n", xlim=c(0.8, n_col+0.2), ylim=c(0.8, n_row+0.2), xlab = "", ylab = "", axes = FALSE, bty = "o")
+    title("Memory", font.main = 2, line = 3)
 
     # add x-axis with column numbers
     axis(side = 1, at = 1:n_col, labels = FALSE, tick = FALSE, line = -0.5)
@@ -57,12 +28,12 @@ print_board <- function(board, n_row, n_col) {
             if ((board[i, j, 3] == 1) & (board[i, j, 4] == 0)) {
                 pch_val <- board[i, j, 1]
                 col_val <- board[i, j, 2]
-                ### TODO
+                points(j, (n_row-i)+1, pch = pch_val, cex=3, col=col_val)
 
             }
             # print a card that is already won by a player
             if (board[i, j, 4] > 0) {
-                text(j, i, board[i, j, 4], pos = 4, cex = 1.2)
+                text(j, (n_row-i)+1, board[i, j, 4], pos = 4, cex = 1.5)
             }
         }
     }
@@ -89,11 +60,12 @@ evalaute_move <- function(board, coord1, coord2){
 
 valid_input <- function(board, input, n_row, n_col) {
     b1 <- (input[1] >= 1) & (input[1] <= n_row) # row within range
-    b2 <- (input[2] >= 1) & (input[1] <= n_col) # column within range
+    b2 <- (input[2] >= 1) & (input[2] <= n_col) # column within range
     if (!b1 | !b2) { return(FALSE) }
-
+    
     b3 <- (board[input[1], input[2], 3] == 0) # card is face DOWN
     b4 <- (board[input[1], input[2], 4] == 0) # card wasn't won by anyone yet
+    
     if (!b3 | !b4) { return(FALSE) }
     return(TRUE)
 }
@@ -136,12 +108,16 @@ move_real <- function(board, player, n_row, n_col) {
 }
 
 move_computer <- function(board, player, n_row, n_col) {
-    # get position of 1st card which should be turned face up
+    # find two free cards which should be turned face up
     free <- get_free_cards(board, n_row, n_col)
     card1 <- sample(free, 1)
     free_without_card1 <- setdiff(free, card1)
     card2 <- sample(free_without_card1, 1)
-    cat("Player", player, ", chooses cards", card1, "and", card2, "\n")
+
+    card1 <- unlist(card1) # to print the values bellow
+    card2 <- unlist(card2)
+
+    cat("Player", player, ", chooses cards (", card1[1], ",", card1[2],") and (", card2[1], ",", card2[2], ") \n")
 
     # print new board
     board[card1[1], card1[2], 3] <- 1
@@ -206,23 +182,29 @@ init_player <- function(n_real, n_computer){
     return(player) # current player
 }
 
-print_leaderboard <- function(leaderboard, player) {
+print_leaderboard <- function(leaderboard, p_names, player, computer) {
     cat("Correct, Player", player, "plays again! Current Leaderboard:\n")
     # Leaderboard
-    for (i in 1:length(leaderboard)){
-        cat(sprintf("%-10s %-10s\n", i, leaderboard[i]))
-    }
+
+    # first line of leaderboard with names
+    cat(paste(sprintf("%10s", p_names), sep = ""), "\n")
+    # second line of output with scores
+    cat(paste(sprintf("%10d", leaderboard), sep = ""), "\n")
 
     # Continue with game
     valid <- FALSE
     key <- ""
     while (!valid) {
         cat("Press [y], when you are ready to move on!\n")
-        key <- scan(what = character(), n = 1, quiet = TRUE)
+        # Proceed automatically if computer plays
+        if (!computer) {
+            key <- scan(what = character(), n = 1, quiet = TRUE)
+        } else { key <- "y" }
+        # Check if user pressed correct key
         if (key == "y") {
             valid <- TRUE
         } else {
-            cat("Wrong, Player", player, "plays!")
+            cat("Wrong key!")
         }
     }
 }
@@ -231,17 +213,37 @@ equal_cards <- function(board, card1, card2, player){
     # 1) set 4th value of 3rd dimension for both cards to 1,
     # since the current player won both cards
     # 2) the player stays the same
-    
+
     board <- board
     board[card1[1], card1[2], 4] <- player
     board[card2[1], card2[2], 4] <- player
     return(board)
 }
 
-unequal_cards <- function(board, card1, card2) {
+unequal_cards <- function(board, card1, card2, player, num_players, computer) {
     # 1) set 3rd value of 3rd dimension back to 0 since the cards
     # didnt match and therefore need to be faced down again
     # 2) get the next player (e.g. current player is 2 then next player is 3
+
+    next_player <- (player %% num_players)+1 # chosse next player
+    cat("Wrong, Player", next_player, "plays! ")
+
+    # Continue with game
+    valid <- FALSE
+    key <- ""
+    while (!valid) {
+        cat("Press [y], when you are ready to move on!\n")
+        # Proceed automatically if computer plays
+        if (!computer) { 
+            key <- scan(what = character(), n = 1, quiet = TRUE)
+        } else { key <- "y" }
+        # Check if user pressed correct key
+        if (key == "y") {
+            valid <- TRUE
+        } else {
+            cat("Wrong key!")
+        }
+    }
 
     board <- board
     board[card1[1], card1[2], 3] <- 0
@@ -255,21 +257,22 @@ print_winners <- function(leaderboard) {
     top_players <- which(leaderboard == max_val)
 
     # single winner
-    if (length(top_players)) {
+    if (length(top_players) == 1) {
         cat("Correct, Player", top_players[1], "wins! Final leaderboard:\n")
     } else {
     # multiple winners
         cat("Correct, Player", top_players[1])
         for (i in 2:length(top_players)) {
-            cat("and Player", top_players[i])
+            cat(" and Player", top_players[i])
         }
-        cat("are tied winners! Final leaderboard:\n")
+        cat(" are tied winners! Final leaderboard:\n")
     }
 }
 
-check_game_ended <- function(board, n_row, n_col, leaderboard, player) {
+check_game_ended <- function(board, n_row, n_col, leaderboard, player, p_names, computer) {
     # count number of ones in 2d slice board[ , , 3], i.e. count available cards
-    count <- sum(board[, , 3] == 0)
+    count <- sum(board[, , 4] == 0)
+    
     # -> if number == 1 than print board with remaining card face up, winner/s, leaderboard & return True
     if (count == 1) {
         board[, , 3] <- 1 # set all cards face UP
@@ -280,19 +283,24 @@ check_game_ended <- function(board, n_row, n_col, leaderboard, player) {
         print_winners(leaderboard)
         
         # Leaderboard
-        for (i in 1:length(leaderboard)){
-            cat(sprintf("%-10s %-10s\n", i, leaderboard[i]))
-        }
+        # first line of leaderboard with names
+        cat(paste(sprintf("%10s", p_names), sep = ""), "\n")
+        # second line of output with scores
+        cat(paste(sprintf("%10d", leaderboard), sep = ""), "\n")
+
         return(TRUE)
     } else {
+        # print regular leaderboard since game is still going on
+        print_leaderboard(leaderboard, p_names, player, computer)
         return(FALSE)
     }
 }
 
 memory <- function(n_row = 4, n_col = 4, n_real = 2, n_computer = 0) {
-    # set.seed(0) # JUST FOR TESTING !!!!!!
+    set.seed(0) # JUST FOR TESTING !!!!!!
 
     n <- n_row * n_col # total number of cards
+    num_players <- n_real + n_computer
     leaderboard <- rep(0, n_real + n_computer) # leaderboard for all players
 
     ## Error handling
@@ -305,6 +313,12 @@ memory <- function(n_row = 4, n_col = 4, n_real = 2, n_computer = 0) {
     ## Get initial player
     player <- init_player(n_real, n_computer)
 
+    # collect player names
+    p_names <- c()
+    for (i in 1:length(leaderboard)){
+        p_names <- c(p_names, paste("Player", i))
+    }
+
     ## Build initial board
     board <- init_board(n, n_row, n_col)
 
@@ -315,32 +329,29 @@ memory <- function(n_row = 4, n_col = 4, n_real = 2, n_computer = 0) {
         if (player <= n_real) { # move for real player
             success <- move_real(board, player, n_row, n_col)
             if (success[1]==1) {
-                cat("Success\n")
-                #cat("Board before:", board[success[[2]][1], success[[2]][2], 4],"\n")
                 equal <- equal_cards(board, unlist(success[2]), unlist(success[3]), player)
                 board <- equal
-                #cat("Board after:", board[success[2][1], success[3][2], 4],"\n")
                 leaderboard[player] <- leaderboard[player] + 1
-                print_leaderboard(leaderboard, player)
+                # check if game has ended
+                game_ended <- check_game_ended(board, n_row, n_col, leaderboard, player, p_names, FALSE)
             } else {
-                cat("No Success\n")
-                unequal <- unequal_cards(board, unlist(success[2]), unlist(success[3]))
+                unequal <- unequal_cards(board, unlist(success[2]), unlist(success[3]), player, num_players, FALSE)
                 board <- unequal
-                player <- (player %% (n_real + n_computer))+1 # chosse next player
+                player <- (player %% num_players)+1 # chosse next player
             }
         } else { # move for computer player
             success <- move_computer(board, player, n_row, n_col)
             if (success[1]==1) {
-                equal <- equal_cards(board, unlist(success[2]), unlist(success[3]), player, n_real, n_computer)
+                equal <- equal_cards(board, unlist(success[2]), unlist(success[3]), player)
                 board <- equal
-                print_leaderboard(leaderboard, player)
+                leaderboard[player] <- leaderboard[player] + 1
+                # check if game has ended
+                game_ended <- check_game_ended(board, n_row, n_col, leaderboard, player, p_names, TRUE)
             } else {
-                unequal <- unequal_cards(board, unlist(success[2]), unlist(success[3]))
+                unequal <- unequal_cards(board, unlist(success[2]), unlist(success[3]), player, num_players, TRUE)
                 board <- unequal
-                player <- (player %% (n_real + n_computer))+1 # chosse next player
+                player <- (player %% num_players)+1 # chosse next player
             }
         }
-        # check if game has ended
-        game_ended <- check_game_ended(board, n_row, n_col, leaderboard, player)
     }
 }
