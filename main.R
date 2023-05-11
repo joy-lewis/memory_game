@@ -297,7 +297,7 @@ check_game_ended <- function(board, n_row, n_col, leaderboard, player, p_names, 
 }
 
 memory <- function(n_row = 4, n_col = 4, n_real = 2, n_computer = 0) {
-    set.seed(0) # JUST FOR TESTING !!!!!!
+    #set.seed(0) # JUST FOR TESTING !!!!!!
 
     n <- n_row * n_col # total number of cards
     num_players <- n_real + n_computer
