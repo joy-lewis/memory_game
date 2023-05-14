@@ -174,7 +174,7 @@ init_board <- function(n, n_row, n_col) {
     return(board)
 }
 
-init_player <- function(n_real, n_computer){
+init_player <- function(n_real, n_computer) {
     all_players <- seq(from = 1, to = n_real + n_computer)
     player <- sample(all_players, 1)
     cat("Player", player, "starts!\n")
@@ -307,6 +307,10 @@ memory <- function(n_row = 4, n_col = 4, n_real = 2, n_computer = 0) {
     if (n > 208) {
         stop("Error in memory(): Too many cards: 
             n_row * n_col must not exceed 208.\n")
+        geterrmessage()
+    }
+    if ((n_real == 0) & (n_computer == 0)) {
+        stop("Error in memory(): There needs to be at least 1 player.\n")
         geterrmessage()
     }
 
