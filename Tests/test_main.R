@@ -1,7 +1,7 @@
 # this is a unit test file
 
 # set target class to be tested
-source("../main.R", chdir = TRUE)
+source("../src/main.R", chdir = TRUE)
 library(testthat)
 
 # to avoid waringings when running tests
