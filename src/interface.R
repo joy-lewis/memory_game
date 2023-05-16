@@ -1,5 +1,7 @@
 # this file provides a interface for the memory game,
 # i.e. functions that perform plots and console outputs
+source("test_helper.R")
+
 
 print_board <- function(board, n_row, n_col) {
     # board entrys follow this pattern:
@@ -41,7 +43,7 @@ print_board <- function(board, n_row, n_col) {
     }
 }
 
-print_leaderboard <- function(leaderboard, p_names, player, computer) {
+print_leaderboard <- function(leaderboard, p_names, player, computer, user_inputs) {
     cat("Correct, Player", player, "plays again! Current Leaderboard:\n")
     # Leaderboard
 
@@ -51,21 +53,8 @@ print_leaderboard <- function(leaderboard, p_names, player, computer) {
     cat(paste(sprintf("%10d", leaderboard), sep = ""), "\n")
 
     # Continue with game
-    valid <- FALSE
-    key <- ""
-    while (!valid) {
-        cat("Press [y], when you are ready to move on!\n")
-        # Proceed automatically if computer plays
-        if (!computer) {
-            key <- scan(what = character(), n = 1, quiet = TRUE)
-        } else { key <- "y" }
-        # Check if user pressed correct key
-        if (key == "y") {
-            valid <- TRUE
-        } else {
-            cat("Wrong key!")
-        }
-    }
+    getUserInput(card = FALSE, computer = computer, first_card = NULL, user_inputs = user_inputs)
+    assign("user_inputs", user_inputs, envir = parent.frame())  # Update global user_inputs variable
 }
 
 print_winners <- function(leaderboard) {

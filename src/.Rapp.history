@@ -1,0 +1,38 @@
+4*5
+3+1
+(var <- 5)
+3+1
+x <- c(1,2,3,4,5)
+y <- c(6,7,8,9,10)
+plot(x,y)
+plot(x,y,3)
+plot(x,y,line="")
+environment
+environment()
+data <- read.csv("/Users/joy.lucas/Desktop/R Lab/R_Lab_Week11")
+data <- read.csv("/Users/joy.lucas/Desktop/R Lab/R_Lab_Week11/cereals.csv")
+View(data)
+install XQuartz
+View(data)
+data <- read.csv("/Users/joy.lucas/Desktop/R Lab/R_Lab_Week11/cereals.csv")
+View(data)
+data <- read.csv("/Users/joy.lucas/Desktop/R Lab/R_Lab_Week11/cereals.csv")
+View(data)
+data <- read.csv("/Users/joy.lucas/Desktop/R Lab/R_Lab_Week11/cereals.csv")
+View(data)
+(c(1,1,1,1 ))
+(c(1,1,1,1))
+install.packages('IRkernel')
+library(IRkernel)
+IRkernel::installspec()
+system("pip install jupyter")
+pip install jupyter
+IRkernel::installspec()
+install.packages('IRkernel')
+library(IRkernel)
+IRkernel::installspec()
+chooseCRANmirror()
+install.packages('IRkernel')
+setwd('/Users/joy.lucas/memory_game/src')
+source('main.R')
+memory()
