@@ -26,8 +26,8 @@ print_board <- function(board, n_row, n_col) {
     box()
 
     ### Fill plot with symbols and numbers
-    for(i in 1:n_row) {
-        for(j in 1:n_col) {
+    for (i in 1:n_row) {
+        for (j in 1:n_col) {
             # only print symbol if card is face UP and available
             if ((board[i, j, 3] == 1) & (board[i, j, 4] == 0)) {
                 pch_val <- board[i, j, 1]

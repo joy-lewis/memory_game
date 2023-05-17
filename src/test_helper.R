@@ -1,4 +1,4 @@
-# Functions that arer required for running tests
+# Functions that are required for running tests
 getUserInput <- function(board=NULL, n_row=0, n_col=0, card, computer, first_card = NULL, user_inputs) {
     # this seperates the user input from the actual game,
     # in order to test the game later

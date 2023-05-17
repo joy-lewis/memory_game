@@ -73,3 +73,5 @@ test_that("Full simulation of a game", {
     # Compare the captured output with the expected output
     expect_equal(captured_output, expected_output)
 })
+
+#### TEST GAME FOR n_real = 0, n_computer = 2
